@@ -13,8 +13,45 @@ The overall plan is:
 As one would expect from a data science fellowship program, the Insight website is well written and the page source is dense and complex, but easy(ish) to navigate.  To start, we will pull the webpage using beautiful soup
 
 ```python
+import bs4  # BeautifulSoup4 to scrape the webpage#
 url = 'https://www.insightdatascience.com/fellows'
 response=requests.get(url)
 html=response.content
 soup=bs4.BeautifulSoup(html,'lxml')
+```
+
+Looking at the page source (left click and 'view source') shows us how to find the images.  Each fellows image exists inside a div class 'fellow_img' (Im new to html, so apologies for any incorrect terminology).  The let's make a list containing all the image urls.  We use beautiful soup to find all the 'fellow_img' class data within 'div' tags
+```python
+data=[info for info in soup.find_all('div', class_= "fellow_img")]
+```
+The size of our list can be found with **len(data)** which tells us that there are 794 entries.  Lets take a look at one of them with **print(data[5])** which outputs
+```<div class="fellow_img" style='background-image:url("https://daks2k3a4ib2z.cloudfront.net/575a31d2ce5d01dc7a20de45/5769bb9322c61e320363317d_Jessica-Pic.jpg")'><div class="fellow_caption_back"><div class="fellow_name">Jessica Zúñiga</div><div class="fellow_company">LinkedIn</div></div></div> 
+```
+The url is in the 'background image' style.  It took a bit for me to figure this out.  One thing that helped is to check the type of this thing by **type(data[5])** which tells us that it is a 'bs4.element.Tag'.  That means we can use some function of beautiful soup to extract the url information.  A bit of searching leads to the right sytax, which is pleasantly intuitive.  The text of the style section is pulled with **data[5]["style"]** which outputs 'background-image:url("https://daks2k3a4ib2z.cloudfront.net/575a31d2ce5d01dc7a20de45/5769b885e8628b5103c73621_davidfreeman-main.jpg")'.  Checking **type(data[5]['style'])** tells us that it is a string , which means we can use regex to pull out the url.  Since they are all http....jpg, the regex is straightforward.  Except the group function is needed to output the match as a string instead of a regex match result.  
+
+```python
+import re
+match=re.search(r'https.*jpg',text).group()
+```
+which outputs the url for the image.  Alltogether the code up to this point is:
+```python
+import re # pull url of image name from soup
+import requests #to pull html pages#
+import bs4 #BeautifulSoup4 to scrape the webpage#
+
+
+
+url = 'https://www.insightdatascience.com/fellows'
+response=requests.get(url)
+html=response.content
+soup=bs4.BeautifulSoup(html,'lxml')
+
+
+data=[info for info in soup.find_all('div', class_= "fellow_img")]
+print(len(data))
+
+
+text=data[5]['style']
+match=re.search(r'https.*jpg',text).group()
+print(match)
 ```
