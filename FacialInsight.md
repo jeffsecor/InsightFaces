@@ -115,3 +115,4 @@ plt.xticks(rotation=90)
 plt.tight_layout()
 plt.show()
 ```
+![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart1.png)
