@@ -59,3 +59,22 @@ This works to pull out the url from the first element in the list **data**.  The
 ```python
 match=re.search(r'https.*jpg(?i)|png(?i)',text).group()
 ```
+The missing images will throw an error from the **.group()** function, so a **try...except** structure is appropriate.  We make a new list of our image urls and run a for loop.  The print statements at the end are to check to fidelity of the data and regex
+```python
+url_list=[]
+for i in range(len(data)):
+    try:
+        url_list.append(re.search(r'https.*jpg(?i)|png(?i)',data[i]['style']).group())
+    except:
+        url_list.append('No Image')
+print(len(data))  #check length of data list
+print(len(url_list))  #check this list is the same length
+print(data[402],"\n\n",url_list[402],"\n") #compare entries of each list
+print(data[-1],"\n\n",url_list[-1],"\n")
+```
+There we have it, a list of image urls ready to be called on to download the images.  
+
+The next step in the data collection and cleaning is to get the name of the projects that correspond to the headshots. Similar to how we found the image urls, we look at the webpage source and see that the project title is listed under a class 'tootip_project'.  This scraping step is a bit simpler beacause the information is the only text in the tags, so a single list comprehension with the **.text** function will work:
+```python
+projects=[project.text for project in soup.find_all('div', class_= "tooltip_project")]
+```
