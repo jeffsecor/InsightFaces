@@ -3,7 +3,7 @@
 The following will be a journal style entry as I create the program. There will also be another file with the self-contained python code.  The question we are after is "can we predict the type of project a fellow will choose based on their facial features?" My intial guess is 'no' because I suspect that the common characteristic of Insight fellows is their knowledge and technical methods, not their appearance.  But, it seems like a fun question to ask, and also presents a very in depth learning experience for a novice programme such as myself.  Im learning as I go, so this may get a little bumpy.
 
 The overall plan is:
-1. Scrape image files project text from the webpage
+1. Scrape image files and project text from the webpage
 2. Build database architecture for images with corresponding text
 3. Identify classes/groups/types of projects
 4. Learn facial recognition packages and identify facial characteristics
@@ -54,4 +54,8 @@ print(len(data))
 text=data[5]['style']
 match=re.search(r'https.*jpg',text).group()
 print(match)
+```
+This works to pull out the url from the first element in the list **data**.  The next thing we would  I found that the **.group()** was giving an error that the **.group()** could not act on a type "none".  Checking the documentation of the regular expression functions, 'none' is returned when there is not a match, and so there is no string to group together.  To find the root of the problem, I printed each match as it came out in the loop, along with the text it was trying to match, and found that some images are png, while others are JPG, PNG, or in some cases there are no images.  To work around this,  we can change our matching conditions to be case insensitive using **(i?)** and also an 'or' condition.  The matching expression now looks like 
+```python
+match=re.search(r'https.*jpg(?i)|png(?i)',text).group()
 ```
