@@ -90,7 +90,7 @@ x.project=projects
 ## 2. Identify Types of projects
 
 We'll need to make a finite set of project categories.  To do so, we'll use a bag of words approach in order to find the most common themes.  Our dataframe column 'project' contains all the cleaned project information.  (The list 'projects could be used if it were cleaned of linespaces and other special characters, but this was done by the dataframe).  To make a bag or words, use a Counter from the collections package.  In the counter, we use the regular expression to pick out any word **longer than 3 characters** and make each word lowercase to avoid duplication.  The way that this counter works is for each item in **list(x.project)**, so we sum all the bags together in order to found the counts for all the projects.  Then a bar plot will show us the most common words.  We see that there are still a lot of generic words, so we want to remove these from our data.  We can do this with an ignore list, and then search the counter dictionary for these ignore words.  If we run the program a few times we can see what new generic words show up and we add them to the ignore list.  Finally, we pick out the most common words and plot them.  Here is what there is so far:
-``python
+```python
 # make string list to scan
 words = list(x.project)
 
@@ -116,3 +116,5 @@ plt.tight_layout()
 plt.show()
 ```
 ![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart1.png)
+
+This is good, we see a few topics in here.  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'reccomend' and 'reccomender', or 'predict' and 'predictor' that we want to combine.  So let's make a few lines that can do this for us.
