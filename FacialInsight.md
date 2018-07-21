@@ -81,4 +81,10 @@ projects=[project.text for project in soup.find_all(class_= "tooltip_project")]
 ```
 And thats it for the project list, pretty simple there.
 
-
+To finish this section, lets combine the url with the project title so that its ready for the image.  A dictionary is not too helpful, becuase we dont want the url as a key since it is too obscure.  In this case. a pandas data frame works great.  A few lines to set this up
+```python
+import pandas as pd
+x=pd.DataFrame(columns=('url','project'))
+x.url=url_list
+x.project=projects
+```
