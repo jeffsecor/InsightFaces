@@ -4,10 +4,9 @@ The following will be a journal style entry as I create the program. There will 
 
 The general plan is:
 1. Scrape image files and project text from the webpage
-2. Build database architecture for images with corresponding text
-3. Identify classes/groups/types of projects
-4. Learn facial recognition packages and identify facial characteristics
-5. Look at correlations of selected facial features to projects
+2. Identify classes/groups/types of projects
+3. Learn facial recognition packages and identify facial characteristics
+4. Look at correlations of selected facial features to projects
 
 ## 1. Scraping images and corresponding project text
 As one would expect from a data science fellowship program, the Insight website is well written and the page source is dense and complex, but easy(ish) to navigate.  To start, we will pull the webpage using beautiful soup
@@ -87,4 +86,32 @@ import pandas as pd
 x=pd.DataFrame(columns=('url','project'))
 x.url=url_list
 x.project=projects
+```
+## 2. Identify Types of projects
+
+We'll need to make a finite set of project categories.  To do so, we'll use a bag of words approach in order to find the most common themes.  Our dataframe column 'project' contains all the cleaned project information.  (The list 'projects could be used if it were cleaned of linespaces and other special characters, but this was done by the dataframe).  To make a bag or words, use a Counter from the collections package.  In the counter, we use the regular expression to pick out any word **longer than 3 characters** and make each word lowercase to avoid duplication.  The way that this counter works is for each item in **list(x.project)**, so we sum all the bags together in order to found the counts for all the projects.  Then a bar plot will show us the most common words.  We see that there are still a lot of generic words, so we want to remove these from our data.  We can do this with an ignore list, and then search the counter dictionary for these ignore words.  If we run the program a few times we can see what new generic words show up and we add them to the ignore list.  Finally, we pick out the most common words and plot them.  Here is what there is so far:
+``python
+# make string list to scan
+words = list(x.project)
+
+# custom ignore list that is modified as needed
+ignore = {'your','find','with', 'from','where','that','will','what','they'}
+
+#find words longer than 3 characters and make all lowercase to avaoid doubles from capitalization
+bagsofwords = [collections.Counter(re.findall(r'\w{4,}', word.lower())) for word in words] 
+sumbags=sum(bagsofwords,collections.Counter())
+
+# remove the generic words
+for word in ignore:
+	if word in sumbags:
+		del sumbags[word]
+
+# pick out most common , the most.common feature returns a tuple =  (word,number)
+common_words=[wordval[0] for wordval in sumbags.most_common(40)]
+common_values=[wordval[1] for wordval in sumbags.most_common(40)]
+
+plt.bar(common_words,common_values,color='g')
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.show()
 ```
