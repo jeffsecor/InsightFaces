@@ -117,4 +117,4 @@ plt.show()
 ```
 ![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart1.png)
 
-This is good, we see a few topics in here.  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'reccomend' and 'reccomender', or 'predict' and 'predictor' that we want to combine.  So let's make a few lines that can do this for us.
+This is good, we see a few topics in here. Also note that the most common word is 'predicting' which is the first word of this project!!!  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'reccomend' and 'reccomender', or 'predict' and 'predictor' that we want to combine.  So let's make a few lines that can do this for us.
