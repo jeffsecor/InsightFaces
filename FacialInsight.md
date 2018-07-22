@@ -138,3 +138,34 @@ for key in sumbags:
 			pass
 ```
 This is a bit closer to what we need, but also does not work as can be seen in the example 'fair' and 'fairbnb', or 'come' and 'comedy' or 'care' and 'career'
+
+????????????????????????????
+
+Ok, lets roll up our sleeves and get it done.  A bit of brute force is sometimes effective.  Lets take a look at the data and see what groups are relevant, then scan for those groups.  Twitter is a common theme, so we can search for all twitter related projects with 
+```python
+for key in sumbags:
+	if 'twitt' in key or 'tweet' in key:
+		print(key)
+output:tweet
+twitter
+readtweetapp
+tweets
+newstweet
+tweeting
+retweet
+polytweet
+tweetview
+twitterverse
+```
+We are going to count each of these as a twitter match, and then we'll will later change the dataframe so that each of these people's image is tied to 'twitter'. Then we can remove these from our list and widdle away our project titles.  First, lets start a new dictionary that tracks the number of twitter projects.  Then we will work off a list of keys so that we can delete from that list as we go, since a dictionary can not be changed within a loop structure.
+
+```python
+categories={}
+categories['twitter']=0
+for key in x:
+	if 'twitt' in key or 'tweet' in key:
+		categories['twitter']+=1
+		x.remove(key)
+		print(key)
+```
+
