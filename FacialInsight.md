@@ -117,7 +117,7 @@ plt.show()
 ```
 ![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart1.png)
 
-This is good, we see a few topics in here. Also note that the most common word is 'predicting' which is the first word of this project!!!  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'reccomend' and 'reccomender', or 'predict' and 'predictor' that we want to combine.  We want to group each together and then add up the occurances for the composite group. So let's try to write a few lines that can do this.
+This is good, we see a few topics in here. Also note that the most common word is 'predicting' which is the first word of this project!!!  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'rccomend' and 'recomender', or 'predict' and 'predictor' that we want to combine.  We want to group each together and then add up the occurances for the composite group. So let's try to write a few lines that can do this.
 
 This turns out to be very difficult to categorize the projcects.  One attempt to find duplicates is the following:
 ```python
