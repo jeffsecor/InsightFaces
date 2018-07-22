@@ -160,6 +160,7 @@ twitterverse
 We are going to count each of these as a twitter match, and then we'll will later change the dataframe so that each of these people's image is tied to 'twitter'. Then we can remove these from our list and widdle away our project titles.  First, lets start a new dictionary that tracks the number of twitter projects.  Then we will work off a list of keys so that we can delete from that list as we go, since a dictionary can not be changed within a loop structure.
 
 ```python
+x=list(sumbags.keys())
 categories={}
 categories['twitter']=0
 for key in x:
