@@ -117,4 +117,13 @@ plt.show()
 ```
 ![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart1.png)
 
-This is good, we see a few topics in here. Also note that the most common word is 'predicting' which is the first word of this project!!!  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'reccomend' and 'reccomender', or 'predict' and 'predictor' that we want to combine.  So let's make a few lines that can do this for us.
+This is good, we see a few topics in here. Also note that the most common word is 'predicting' which is the first word of this project!!!  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'reccomend' and 'reccomender', or 'predict' and 'predictor' that we want to combine.  We want to group each together and then add up the occurances for the composite group. So let's try to write a few lines that can do this.
+
+This turns out to be very difficult to categorize the projcects.  One attempt to find duplicates is the following:
+```python
+for key in sumbags:
+	for key2 in sumbags:
+		if key in key2 and key!=key2:
+			print(key,key2)
+```
+This takes each key, then scans it across all the keys in the dictionary.  If the string is a strict subset, i.e. is part of another string but not the same so that it does not match itself, then it prints out the pair.  In total, there are 1093 pairs.  This is not a good filter because it is matching things like 'test' and 'greatest'.  Another option is to scan if the key string is the start of another key like the predictor example above, but this also does not work as can be seen in the example 'fair' and 'fairbnb', or 'come' and 'comedy'.
