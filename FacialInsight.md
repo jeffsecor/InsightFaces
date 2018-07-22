@@ -126,4 +126,15 @@ for key in sumbags:
 		if key in key2 and key!=key2:
 			print(key,key2)
 ```
-This takes each key, then scans it across all the keys in the dictionary.  If the string is a strict subset, i.e. is part of another string but not the same so that it does not match itself, then it prints out the pair.  In total, there are 1093 pairs.  This is not a good filter because it is matching things like 'test' and 'greatest'.  Another option is to scan if the key string is the start of another key like the predictor example above, but this also does not work as can be seen in the example 'fair' and 'fairbnb', or 'come' and 'comedy'.
+This takes each key, then scans it across all the keys in the dictionary.  If the string is a strict subset, i.e. is part of another string but not the same so that it does not match itself, then it prints out the pair.  In total, there are 1093 pairs.  This is not a good filter because it is matching things like 'test' and 'greatest'.  Another option is to scan if the key string is the start of another key like the predictor example above
+```python
+for key in sumbags:
+	for key2 in sumbags:
+		try:
+			re.search(r'^%s.+'%key2,key).group()
+			j+=1
+			print(key,key2)
+		except:
+			pass
+```
+This is a bit closer to what we need, but also does not work as can be seen in the example 'fair' and 'fairbnb', or 'come' and 'comedy' or 'care' and 'career'
