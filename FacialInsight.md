@@ -157,16 +157,31 @@ polytweet
 tweetview
 twitterverse
 ```
-We are going to count each of these as a twitter match, and then we'll will later change the dataframe so that each of these people's image is tied to 'twitter'. Then we can remove these from our list and widdle away our project titles.  First, lets start a new dictionary that tracks the number of twitter projects.  Then we will work off a list of keys so that we can delete from that list as we go, since a dictionary can not be changed within a loop structure.
+We are going to change the dataframe so that each of these project becomes simply 'twitter'.  The following funciton can achieve this with a manual input of keywords as the wordlist, and resets the project name to 'topic'.  The print statement is an internal check that is useful during development.
 
 ```python
-x=list(sumbags.keys())
-categories={}
-categories['twitter']=0
-for key in x:
-	if 'twitt' in key or 'tweet' in key:
-		categories['twitter']+=1
-		x.remove(key)
-		print(key)
+def topic(topic,wordlist):
+	for project in x.project:
+		for word in wordlist:
+			if word in project.lower():
+				# print('found ', word,' in ' ,project)
+				x.project[x.project==project]=topic
 ```
-
+This requires a customized list for each topic that is created based on the words in the project list.  An example of some lists are:
+```python
+topic('money',['money','loan','lend','stock','hedge','invest','finance','financial'])
+topic('food',['food','yelp','bake','recipe','beer','wine','liquor','cook','delicious','cuisine','meal','yum','tasty','coffee','restaurant','dinner','lunch','breakfast','diet','nutrition'])
+topic('social',['social','facebook','friend','romance','dating','people'])
+topic('transportation',['flight','trip','traffic','travel','airplane','airport','delay','bnb','walk','route','vacation','transportation','taxi'])
+topic('twitter',['tweet','twitt'])
+topic('eductation',['student','teacher','school','university'])
+topic('media',['news','book','music','youtube','movie','song'])
+topic('business',['customer','churn','career','job','business','businesses','product','market','b2b','retail','shop'])
+```
+After running the program with these lists, we can iterate the process and look at what has not been catagorized with 
+```python
+for proj in x.project:
+	if proj not in topic_list:
+		print(proj)
+```
+and add additional words to the topic list as needed.
