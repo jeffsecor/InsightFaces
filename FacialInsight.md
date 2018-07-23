@@ -160,17 +160,15 @@ twitterverse
 We are going to change the dataframe so that each of these project becomes simply 'twitter'.  The following funciton can achieve this with a manual input of keywords as the wordlist, and resets the project name to 'topic'.  The print statement is an internal check that is useful during development.
 
 ```python
-
 topic_list={}
-
 def topic(topic,wordlist):
-	for project in x.project:
-		for word in wordlist:
-			if word in project.lower():
-				# print('found ', word,' in ' ,project)
-				x.project[x.project==project]=topic
-		 topic_list[topic]=count
-
+    count=0
+    for project in x.project:
+        for word in wordlist:
+            if word in project.lower():
+                x.project[x.project==project]=topic
+                count+=1
+    topic_list[topic]=count
 ```
 This requires a customized list for each topic that is created based on the words in the project list.  An example of some lists are:
 ```python
