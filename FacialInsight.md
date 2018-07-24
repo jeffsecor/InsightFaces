@@ -80,10 +80,10 @@ projects=[project.text for project in soup.find_all(class_= "tooltip_project")]
 ```
 And thats it for the project list, pretty simple there.
 
-To finish this section, lets combine the url with the project title so that its ready for the image.  A dictionary is not too helpful, becuase we dont want the url as a key since it is too obscure.  In this case. a pandas data frame works great.  A few lines to set this up
+To finish this section, lets combine the url with the project title so that its ready for the image.  A dictionary is not too helpful, becuase we dont want the url as a key since it is too obscure.  In this case. a pandas data frame works great. The topic column will be used when we classify each project into a general topic  A few lines to set this up
 ```python
 import pandas as pd
-x=pd.DataFrame(columns=('url','project'))
+x=pd.DataFrame(columns=('url','project',topic))
 x.url=url_list
 x.project=projects
 ```
@@ -166,7 +166,7 @@ def topic(topic,wordlist):
     for project in x.project:
         for word in wordlist:
             if word in project.lower():
-                x.project[x.project==project]=topic
+                x.topic[x.project==project]=topic
                 count+=1
     topic_list[topic]=count
 ```
@@ -181,10 +181,12 @@ topic('eductation',['student','teacher','school','university'])
 topic('media',['news','book','music','youtube','movie','song'])
 topic('business',['customer','churn','career','job','business','businesses','product','market','b2b','retail','shop'])
 ```
-After running the program with these lists, we can iterate the process and look at what has not been catagorized with 
+After running the program with these lists, we can iterate the process and add additional words to the topic list as needed. 
 ```python
-for proj in x.project:
-	if proj not in topic_list:
-		print(proj)
+for i in range(len(x)):
+	if x.project[i] not in topic_list:
+		print(x.project[i])
 ```
-and add additional words to the topic list as needed.
+At this point, its not obvious how to categorize the projects so that there will be a large number of projects in each category.  In order to correlate facial features with projects, and make a predictive model, we need several faces per topic, and this process is making the topic bins too sparse.  
+
+Perhaps this question is not well formulted....suggestions welcomed.
