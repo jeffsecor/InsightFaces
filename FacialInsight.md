@@ -190,3 +190,19 @@ for i in range(len(x)):
 At this point, its not obvious how to categorize the projects so that there will be a large number of projects in each category.  In order to correlate facial features with projects, and make a predictive model, we need several faces per topic, and this process is making the topic bins too sparse.  
 
 Perhaps this question is not well formulted....suggestions welcomed.
+
+
+## Clustering Faces
+to save the faces to a location on disk
+```python
+i=0
+path = "C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images\\"
+for url in url_list:
+    try:
+        urllib.request.urlretrieve(url,
+                               path+'{}{}'.format(i,url[-4:]))
+    except:
+        print(i)
+        pass
+    i+=1
+```
