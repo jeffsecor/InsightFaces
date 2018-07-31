@@ -64,7 +64,7 @@ The missing images will also throw an error from the **.group()** function, so a
 url_list=[]
 for i in range(len(data)):
     try:
-        url_list.append(re.search(r'https.*jpg(?i)|png(?i)',data[i]['style']).group())
+        url_list.append(re.search(r'https.*jpg(?i)|https.*png(?i)',data[i]['style']).group())
     except:
         url_list.append('No Image')
 print(len(data))  #check length of data list
@@ -193,8 +193,11 @@ Perhaps this question is not well formulted....suggestions welcomed.
 
 
 ## Clustering Faces
-to save the faces to a location on disk
+To save the faces to a location on disk, let's run this snippet of code from above with a bit of additional code using the **urllib** package. The **[-4:]** takes the file extension from the url and appends it to the filename for proper extension handling.  
 ```python
+import urllib.request
+import os
+import re
 i=0
 path = "C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images\\"
 for url in url_list:
@@ -206,3 +209,4 @@ for url in url_list:
         pass
     i+=1
 ```
+which outputs all the images, and the number 777 which means we need to make sure we associate number 777 in the data base to the entry with "No Image".
