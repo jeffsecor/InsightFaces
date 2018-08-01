@@ -210,3 +210,22 @@ for url in url_list:
     i+=1
 ```
 which outputs all the images, and the number 777 which means we need to make sure we associate number 777 in the data base to the entry with "No Image".
+
+### Facial Recognition and Defining the Targets
+To analyze the faces, I've used a modified version of the code found on this DBSCAN tutorial (https://www.pyimagesearch.com/2018/07/09/face-clustering-with-python/).  The goal will be create image files of only the faces, i.e. without background details, then assign our topic tag to each image.  It is simple to make a tag for the images for which we have assigned a topic. First we explicity define a numerical index for our data frame, then pull those images with each tag
+```python
+import os
+import cv2
+from imutils import build_montages
+
+path = 'C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images'
+
+
+x.index=[i for i in range(794)] #make numerical index , 794 could be replaced by len(x) for genera case
+money_list=x.index[x.project=='money'] #get values where topic is 'money'
+
+money_faces=[cv2.imread(os.path.join(path,'{}.jpg'.format(i))) for i in money_list] # 
+montage = build_montages(money_faces, (96, 96), (6, 6))[0]
+cv2.imshow('money',montage)
+```
+![Money Faces](https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG)
