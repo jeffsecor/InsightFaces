@@ -91,31 +91,42 @@ x.project=projects
 
 We'll need to make a finite set of project categories.  To do so, we'll use a bag of words approach in order to find the most common themes.  Our dataframe column 'project' contains all the cleaned project information.  (The list 'projects could be used if it were cleaned of linespaces and other special characters, but this was done by the dataframe).  To make a bag or words, use a Counter from the collections package.  In the counter, we use the regular expression to pick out any word **longer than 3 characters** and make each word lowercase to avoid duplication.  The way that this counter works is for each item in **list(x.project)**, so we sum all the bags together in order to found the counts for all the projects.  Then a bar plot will show us the most common words.  We see that there are still a lot of generic words, so we want to remove these from our data.  We can do this with an ignore list, and then search the counter dictionary for these ignore words.  If we run the program a few times we can see what new generic words show up and we add them to the ignore list.  Finally, we pick out the most common words and plot them.  Here is what there is so far:
 ```python
-# make string list to scan
+# make a list fellow's projects
+projects=[project.text for project in soup.find_all(class_= "tooltip_project")] 
+
+# create data frame 
+x=pd.DataFrame(columns=('url','project','topic'))
+x.url=url_list
+x.project=projects
+
+
+#find words in projects that are longer than 3 characters and make all lowercase
+#to avaoid doubles from capitalization
 words = list(x.project)
-
-# custom ignore list that is modified as needed
-ignore = {'your','find','with', 'from','where','that','will','what','they'}
-
-#find words longer than 3 characters and make all lowercase to avaoid doubles from capitalization
 bagsofwords = [collections.Counter(re.findall(r'\w{4,}', word.lower())) for word in words] 
 sumbags=sum(bagsofwords,collections.Counter())
 
-# remove the generic words
+#delete common words
+ignore = {'your','find','with', 'from','where','that','will','what','they','based',
+          'next','using','recommender','predicting','predict','recommend'}
 for word in ignore:
 	if word in sumbags:
 		del sumbags[word]
 
-# pick out most common , the most.common feature returns a tuple =  (word,number)
-common_words=[wordval[0] for wordval in sumbags.most_common(40)]
-common_values=[wordval[1] for wordval in sumbags.most_common(40)]
+#find most common value data set from couter object
+number = 50
+common_words=[wordval[0] for wordval in sumbags.most_common(number)]
+common_values=[wordval[1] for wordval in sumbags.most_common(number)]
 
+#plot histogram of common words
 plt.bar(common_words,common_values,color='g')
 plt.xticks(rotation=90)
-plt.tight_layout()
+plt.tight_layout(pad=2)
+plt.title('%d Most Common Words in Insight Data Fellows Project Titles'%number)
+plt.ylabel('Counts')
 plt.show()
 ```
-![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart1.png)
+![Common Words](https://github.com/jeffsecor/InsightFaces/blob/master/wordChart2.png)
 
 This is good, we see a few topics in here. Also note that the most common word is 'predicting' which is the first word of this project!!!  If we look at the full project list, we see that there are some combination words, like 'FacebookDigest' that are not properly counted by this method,  but we will do our best for now.  Also, there are still some duplicates, like 'rccomend' and 'recomender', or 'predict' and 'predictor' that we want to combine.  We want to group each together and then add up the occurances for the composite group. So let's try to write a few lines that can do this.
 
@@ -160,36 +171,51 @@ twitterverse
 We are going to change the dataframe so that each of these project becomes simply 'twitter'.  The following funciton can achieve this with a manual input of keywords as the wordlist, and resets the project name to 'topic'.  The print statement is an internal check that is useful during development.
 
 ```python
-topic_list={}
+
+#convert words in the project description to one key word = topics
+topic_list={} #dictionary of topics with counts as the value of each topic key
+
 def topic(topic,wordlist):
     count=0
     for project in x.project:
         for word in wordlist:
             if word in project.lower():
-                x.topic[x.project==project]=topic
                 count+=1
+                x.topic[x.project==project]=topic
     topic_list[topic]=count
-```
-This requires a customized list for each topic that is created based on the words in the project list.  An example of some lists are:
-```python
-topic('money',['money','loan','lend','stock','hedge','invest','finance','financial'])
-topic('food',['food','yelp','bake','recipe','beer','wine','liquor','cook','delicious','cuisine','meal','yum','tasty','coffee','restaurant','dinner','lunch','breakfast','diet','nutrition'])
+
+#define these lists based on observation.
+#The function  'topic' takes a key word and a list as parameters
+topic('money',['money','currency','loan','lend','stock','hedge','invest','financ','bank'])
+
+topic('food',['food','yelp','bake','recipe','beer','wine','liquor','sandwich','cook',
+              'delicious','cuisine','meal','yum','tasty','coffee','restaurant','dinner','lunch','breakfast','diet','nutrition'])
+
 topic('social',['social','facebook','friend','romance','dating','people'])
-topic('transportation',['flight','trip','traffic','travel','airplane','airport','delay','bnb','walk','route','vacation','transportation','taxi'])
+
+topic('transportation',['flight','trip','traffic','travel','airplane','airport','airfare',
+                        'delay','bnb','walk','route','vacation','transport','taxi'])
+
 topic('twitter',['tweet','twitt'])
-topic('eductation',['student','teacher','school','university'])
-topic('media',['news','book','music','youtube','movie','song'])
-topic('business',['customer','churn','career','job','business','businesses','product','market','b2b','retail','shop'])
+
+topic('eductation',['student','teacher','school','university','education'])
+
+topic('media',['news','book','music','youtube','movie','song','media'])
+
+topic('business',['customer','churn','career','job','business','business',
+                  'startup','product','market','b2b','retail','shop'])
+
+topic('sports',['nhl','nfl','nba','football','baseball','basketball','health','sports',
+                'running','marathon','fitness','bike','hike','trainer'])
 ```
-After running the program with these lists, we can iterate the process and add additional words to the topic list as needed. 
+
+After running the program with these lists, we can iterate the process and add additional words to the topic list as needed. The following code run in the command line shows the projects that are not categorized
+
 ```python
 for i in range(len(x)):
-	if x.project[i] not in topic_list:
+	if x.topic[i] not in topic_list:
 		print(x.project[i])
 ```
-At this point, its not obvious how to categorize the projects so that there will be a large number of projects in each category.  In order to correlate facial features with projects, and make a predictive model, we need several faces per topic, and this process is making the topic bins too sparse.  
-
-Perhaps this question is not well formulted....suggestions welcomed.
 
 
 ## Clustering Faces
