@@ -8,7 +8,7 @@ The general plan is:
 3. Learn facial recognition packages and identify facial characteristics
 4. Look at correlations of selected facial features to projects
 
-## 1. Scraping images and corresponding project text
+## 1. Scraping Images and Corresponding Project Text
 As one would expect from a data science fellowship program, the Insight website is well written and the page source is dense and complex, but easy(ish) to navigate.  To start, we will pull the webpage using beautiful soup
 
 ```python
@@ -87,7 +87,7 @@ x=pd.DataFrame(columns=('url','project',topic))
 x.url=url_list
 x.project=projects
 ```
-## 2. Identify Types of projects
+## 2. Identify Types of Projects
 
 We'll need to make a finite set of project categories.  To do so, we'll use a bag of words approach in order to find the most common themes.  Our dataframe column 'project' contains all the cleaned project information.  (The list 'projects could be used if it were cleaned of linespaces and other special characters, but this was done by the dataframe).  To make a bag or words, use a Counter from the collections package.  In the counter, we use the regular expression to pick out any word **longer than 3 characters** and make each word lowercase to avoid duplication.  The way that this counter works is for each item in **list(x.project)**, so we sum all the bags together in order to found the counts for all the projects.  Then a bar plot will show us the most common words.  We see that there are still a lot of generic words, so we want to remove these from our data.  We can do this with an ignore list, and then search the counter dictionary for these ignore words.  If we run the program a few times we can see what new generic words show up and we add them to the ignore list.  Finally, we pick out the most common words and plot them.  Here is what there is so far:
 ```python
@@ -221,11 +221,12 @@ from imutils import build_montages
 path = 'C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images'
 
 
-x.index=[i for i in range(794)] #make numerical index , 794 could be replaced by len(x) for genera case
+x.index=[i for i in range(794)] #make numerical index , 794 could be replaced by len(x) for general case
 money_list=x.index[x.project=='money'] #get values where topic is 'money'
 
-money_faces=[cv2.imread(os.path.join(path,'{}.jpg'.format(i))) for i in money_list] # 
+money_faces=[cv2.imread(os.path.join(path,'{}.jpg'.format(i))) for i in money_list] 
 montage = build_montages(money_faces, (96, 96), (6, 6))[0]
 cv2.imshow('money',montage)
 ```
-![Money Faces](https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG =100x100)
+
+<img src="https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG" width="512">
