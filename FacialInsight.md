@@ -216,7 +216,17 @@ for i in range(len(x)):
 	if x.topic[i] not in topic_list:
 		print(x.project[i])
 ```
+Then, lets take a look at what are the most common topics by plotting a new histogram with the topics and their values 
+```python
+plt.bar([topic for topic in topic_list],[topic_list[topic] for topic in topic_list],color='g')
+plt.xticks(rotation=90)
+plt.tight_layout(pad=2)
+plt.title('%d Most Common Topics in Insight Data Fellows Project Titles'%number)
+plt.ylabel('Counts')
+plt.show()
+```
 
+![Common Topics](https://github.com/jeffsecor/InsightFaces/blob/master/commonTopics.png)
 
 ## Clustering Faces
 To save the faces to a location on disk, let's run this snippet of code from above with a bit of additional code using the **urllib** package. The **[-4:]** takes the file extension from the url and appends it to the filename for proper extension handling.  
