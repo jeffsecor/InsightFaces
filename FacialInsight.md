@@ -228,4 +228,4 @@ money_faces=[cv2.imread(os.path.join(path,'{}.jpg'.format(i))) for i in money_li
 montage = build_montages(money_faces, (96, 96), (6, 6))[0]
 cv2.imshow('money',montage)
 ```
-![Money Faces](https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG)
+![Money Faces](https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG =250x250)
