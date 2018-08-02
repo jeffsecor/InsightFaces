@@ -228,8 +228,12 @@ plt.show()
 
 ![Common Topics](https://github.com/jeffsecor/InsightFaces/blob/master/commonTopics.png)
 
+These will be the target categories for our machine learning model.
+
 ## Clustering Faces
-To save the faces to a location on disk, let's run this snippet of code from above with a bit of additional code using the **urllib** package. The **[-4:]** takes the file extension from the url and appends it to the filename for proper extension handling.  
+The goal is now to input a group of faces as the data and the project topic as the target variable.  This is not like conventional facial clustering, because we are not trying to cluster images that are similar, but rather we need to find a metric (or metrics) that can be used to cluster each topic group.  Based on the work done above, we have about 350 assigned topics.  We will use these as our training/testing data.
+
+First, save the faces to a location on disk using the **urllib** package. The **[-4:]** takes the file extension from the url and appends it to the filename for proper extension handling.  
 ```python
 import urllib.request
 import os
@@ -245,24 +249,76 @@ for url in url_list:
         pass
     i+=1
 ```
-which outputs all the images, and the number 777 which means we need to make sure we associate number 777 in the data base to the entry with "No Image".
-
-### Facial Recognition and Defining the Targets
-To analyze the faces, I've used a modified version of the code found on this DBSCAN tutorial (https://www.pyimagesearch.com/2018/07/09/face-clustering-with-python/).  The goal will be create image files of only the faces, i.e. without background details, then assign our topic tag to each image.  It is simple to make a tag for the images for which we have assigned a topic. First we explicity define a numerical index for our data frame, then pull those images with each tag
+which outputs all the images, and the number 777 which means we need to make sure we associate number 777 in the data base to the entry with "No Image".  Lets take a look at some of the fellows in the money category
 ```python
 import os
 import cv2
 from imutils import build_montages
 
 path = 'C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images'
-
-
-x.index=[i for i in range(794)] #make numerical index , 794 could be replaced by len(x) for general case
 money_list=x.index[x.project=='money'] #get values where topic is 'money'
 
-money_faces=[cv2.imread(os.path.join(path,'{}.jpg'.format(i))) for i in money_list] 
+#make list of images with topic == money
+money_faces=[cv2.imread(os.path.join(path,'{}.jpg'.format(index))) for index in money_list] 
 montage = build_montages(money_faces, (96, 96), (6, 6))[0]
 cv2.imshow('money',montage)
 ```
-
 <img src="https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG" width="512">
+ 
+
+### Facial Recognition and Defining the Targets
+We want to assign the topic as the target for each fellow's image that has been classified.  Then we will make a cluster of each topic based on the encodings of all the images in the topic.   
+
+I will use the DBSCAN package for facial analysis. This captures only the facial region and serializes the data.  The following is modified  from https://www.pyimagesearch.com/2018/07/09/face-clustering-with-python/ .  The output pickle file contains encoding of each image.  I've modified the output dictionary to use the image number as the value to 'Photonumber' key because the pickle file changes the order of the files and its easier to change the pickle output to match our database order than to figure out which encoding goes with what image after encoding.  To do this, I use a regular expression to find the image file number from its url, and use that as the value for the Photonumber key 
+```python
+# import the necessary packages
+from imutils import paths
+import face_recognition
+import argparse
+import pickle
+import cv2
+import os
+import re
+
+# grab the paths to the input images in our dataset, then initialize
+# out data list (which we'll soon populate)
+print("[INFO] quantifying faces...")
+path = 'C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images\\'
+imagePaths = list(paths.list_images(path))
+data = []
+
+
+
+# loop over the image paths
+# load the input image and convert it from RGB (OpenCV ordering)
+# to dlib ordering (RGB)
+for (i, imagePath) in enumerate(imagePaths):
+        print("[INFO] processing image {}/{}".format(i + 1,len(imagePaths)))
+        print(imagePath)
+        imagenumber=re.search(r'\d*\.',imagePath).group().strip('.')
+        image = cv2.imread(imagePath)
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+
+        # detect the (x, y)-coordinates of the bounding boxes
+        # corresponding to each face in the input image
+        boxes = face_recognition.face_locations(rgb, model="hog")
+
+
+        # compute the facial embedding for the face
+        encodings = face_recognition.face_encodings(rgb, boxes)
+         
+        # build a dictionary of the image number, bounding box location, and facial encodings for the current image
+        d = [{"PhotoNumber": imagenumber, "loc": box, "encoding": enc} for (box, enc) in zip(boxes, encodings)]
+        data.extend(d)
+
+
+        # dump the facial encodings data to disk
+        print("[INFO] serializing encodings...")
+        f = open(path+'pickle', "wb")
+        f.write(pickle.dumps(data))
+        f.close()
+
+```
+
+
