@@ -231,6 +231,9 @@ plt.show()
 These will be the target categories for our machine learning model.
 
 ## Clustering Faces
+
+### Making the Dataframe and Serializing Images
+
 The goal is now to input a group of faces as the data and the project topic as the target variable.  This is not like conventional facial clustering, because we are not trying to cluster images that are similar, but rather we need to find a metric (or metrics) that can be used to cluster each topic group.  Based on the work done above, we have about 350 assigned topics.  We will use these as our training/testing data.
 
 First, save the faces to a location on disk using the **urllib** package. The **[-4:]** takes the file extension from the url and appends it to the filename for proper extension handling.  
@@ -265,11 +268,65 @@ cv2.imshow('money',montage)
 ```
 <img src="https://github.com/jeffsecor/InsightFaces/blob/master/moneyfaces.PNG" width="512">
  
-
-### Facial Recognition and Defining the Targets
-We want to assign the topic as the target for each fellow's image that has been classified.  Then we will make a cluster of each topic based on the encodings of all the images in the topic.   
-
 I will use the DBSCAN package for facial analysis. This captures only the facial region and serializes the data.  The following is modified  from https://www.pyimagesearch.com/2018/07/09/face-clustering-with-python/ . 
+```python
+from imutils import paths
+import face_recognition
+import argparse
+import pickle
+import cv2
+import os
+import re
+
+# grab the paths to the input images in our dataset, then initialize
+# out data list (which we'll soon populate)
+print("[INFO] quantifying faces...")
+path = 'C:\\Users\\Ruddiger\\AppData\\Local\\Programs\\Python\\Python36\\Faces\\Images\\'
+imagePaths = list(paths.list_images(path))
+data = []
+
+# loop over the image paths
+# load the input image and convert it from RGB (OpenCV ordering)
+# to dlib ordering (RGB)
+for (i, imagePath) in enumerate(imagePaths):
+        print("[INFO] processing image {}/{}".format(i + 1,len(imagePaths)))
+        print(imagePath)
+        imagenumber=re.search(r'\d*\.',imagePath).group().strip('.')
+        image = cv2.imread(imagePath)
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # detect the (x, y)-coordinates of the bounding boxes
+        # corresponding to each face in the input image
+        boxes = face_recognition.face_locations(rgb, model="hog")
+
+        # compute the facial embedding for the face
+        encodings = face_recognition.face_encodings(rgb, boxes)
+         
+        # build a dictionary of the image path, bounding box location,
+        # and facial encodings for the current image
+        d = [{'ImagePath':imagePath,"PhotoNumber": imagenumber, "loc": box, "encoding": enc} for (box, enc) in zip(boxes, encodings)]
+        data.extend(d)
+
+        # dump the facial encodings data to disk
+        print("[INFO] serializing encodings...")
+        f = open(path+'pickle', "wb")
+        f.write(pickle.dumps(data))
+        f.close()
+```
+The output is a pickle file that contains the image encodings along with the coordinates of the bounding box of the face.  We want to continue building our dataframe to include this information.  To do so, we can include two new column to our dataframe that will hold **arrays**, but calling a new column as **x['encodings']=pd.isnull**  The null is helpful because it does not set the type of object that goes into this column yet, so there will not be a conflict when an array is passed to the dataframe.
+
+Since the order of the encodings does not match the order of the original dataframe, we need to scan each encoding within the pickle file and assign it to the proper index in our dataframe.  This can be achieved by matching photo number in the pickle object to the index in the original dataframe.  
+```python
+for d in data:
+	num = int(d['PhotoNumber'])
+	fellows.encoding.iloc[num]=d['encoding']
+	fellows.box.iloc[num]=d['loc']
+```
+This updates the data frame to include the encoding and bounding box location.  Finally, we save this dataframe with a save to csv
+```python
+fellows.to_csv('facebook.csv')
 ```
 
+## Setting Targets and Executing the Cluster Model 
+We want to assign the topic as the target for each fellow's image that has been classified.  Then we will make a cluster of each topic based on the encodings of all the images in the topic.
 
