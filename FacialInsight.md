@@ -321,6 +321,8 @@ for d in data:
 	num = int(d['PhotoNumber'])
 	fellows.encoding.iloc[num]=d['encoding']
 	fellows.box.iloc[num]=d['loc']
+	fellows.path.iloc[num]=d['ImagePath']
+
 ```
 This updates the data frame to include the encoding and bounding box location.  Finally, we save this dataframe with a save to csv
 ```python
